@@ -72,7 +72,7 @@ def approval():
             InnerTxnBuilder.SetFields({
 
                 TxnField.type_enum: TxnType.AssetConfig,
-                TxnField.config_asset_total: App.globalGet(pool_target)),
+                TxnField.config_asset_total: App.globalGet(pool_target),
                 TxnField.config_asset_decimals: Int(3),
                 TxnField.config_asset_default_frozen: Int(1), # dovrebbe essere true
                 TxnField.config_asset_unit_name: Bytes("unit"),
