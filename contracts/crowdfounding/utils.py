@@ -25,7 +25,7 @@ def createCrowdFoundindTxt(
         asdads
     """
     
-    globalSchema = future.transaction.StateSchema(num_uints=3,num_byte_slices=2)
+    globalSchema = future.transaction.StateSchema(num_uints=4,num_byte_slices=2)
     localSchema = future.transaction.StateSchema(num_uints=0,num_byte_slices=0)
 
     app_args = [

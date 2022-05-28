@@ -1,64 +1,7 @@
 from pyteal import *
 from pyteal.ast.bytes import Bytes
      
-# In caso di problemi con una subroutine, sostituire 
 
-# Domande
-# Perchè non si uò usare una subroutine all'init dell'applicazione
-
-"""
-                    Seq(
-
-                    InnerTxnBuilder.Begin(),
-
-                    InnerTxnBuilder.SetFields({
-                        TxnField.type_enum: TxnType.Payment,
-                        TxnField.receiver: AppParam.address(Txn.created_application_id()).value(),
-                        TxnField.amount: Int(1000000)
-                    }),
-
-                    InnerTxnBuilder.Next(),
-                    
-                    InnerTxnBuilder.SetFields({
-
-                    TxnField.type_enum: TxnType.AssetConfig,
-                    TxnField.config_asset_total: Int(1000000),
-                    TxnField.config_asset_decimals: Int(3),
-                    TxnField.config_asset_default_frozen: Int(1),
-                    TxnField.config_asset_unit_name: Bytes("unit"),
-                    TxnField.config_asset_name: Itob(Global.latest_timestamp()),#Bytes("base32",Txn.sender()),
-                    TxnField.config_asset_manager: Global.current_application_address(),
-                    TxnField.config_asset_reserve: Global.current_application_address(),
-                    TxnField.config_asset_freeze: Global.current_application_address(),
-                    TxnField.config_asset_clawback: Global.current_application_address(),
-                    
-                    }),
-                    InnerTxnBuilder.Submit()
-
-                ),
-
-
-
-        
-        InnerTxnBuilder.Next(),
-                    
-        InnerTxnBuilder.SetFields({
-
-            TxnField.type_enum: TxnType.AssetConfig,
-            TxnField.config_asset_total: App.globalGet(pool_target),
-            TxnField.config_asset_decimals: Int(3),
-            TxnField.config_asset_default_frozen: Int(1),
-            TxnField.config_asset_unit_name: Bytes("unit"),
-            TxnField.config_asset_name: Itob(Global.latest_timestamp()),
-            TxnField.config_asset_manager: Global.current_application_address(),
-            TxnField.config_asset_reserve: Global.current_application_address(),
-            TxnField.config_asset_freeze: Global.current_application_address(),
-            TxnField.config_asset_clawback: Global.current_application_address(),
-            }),
-            
-
-
-"""
 
 def approval():
 
@@ -66,6 +9,8 @@ def approval():
     # Actors
     # Vale la pena aggiungere l'info o il nome della crowdfound
     founder_actor = Bytes("founder")  # byteslice, actor asking for founds
+    token_id = Bytes("token_id") 
+
     
     # Actions
     op_create_founding_pool = Bytes("create_pool") 
@@ -127,7 +72,7 @@ def approval():
             InnerTxnBuilder.SetFields({
 
                 TxnField.type_enum: TxnType.AssetConfig,
-                TxnField.config_asset_total: Int(1000000),
+                TxnField.config_asset_total: App.globalGet(pool_target)),
                 TxnField.config_asset_decimals: Int(3),
                 TxnField.config_asset_default_frozen: Int(1), # dovrebbe essere true
                 TxnField.config_asset_unit_name: Bytes("unit"),
@@ -143,6 +88,8 @@ def approval():
             InnerTxnBuilder.Submit()
 
         ),
+
+        App.globalPut(token_id, InnerTxn.created_asset_id()), #assigning new token id to the app
 
         Approve()
 
