@@ -1,0 +1,20 @@
+FROM  python:3.10-slim-buster
+LABEL Author, Iacopo Galimberti
+
+WORKDIR /backend
+
+# Create the environment:
+COPY env/backend_algo.txt .
+RUN pip install -r backend_algo.txt
+
+# exposing port
+EXPOSE 80
+
+# Partenza dell'app di streamlit
+COPY mid2node.py .
+RUN mkdir contracts
+COPY contracts/crowdfounding/contract.py contracts/.
+COPY contracts/crowdfounding/utils.py contracts/.
+
+RUN ls
+CMD python mid2node.py

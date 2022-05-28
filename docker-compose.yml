@@ -1,0 +1,12 @@
+version: '3'
+
+
+services:
+    
+  contract:
+    container_name: backend_algo
+    build: 
+      dockerfile: docker_file/backend_algo
+      context: ./
+    ports:
+      - '8501:8501'
