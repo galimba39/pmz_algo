@@ -10,7 +10,9 @@
 
 The docker compose will start 3 nodes: one sql server, storing contracts, an API backend and a setup scripts, creating 3 pools from 3 users. The compose will be ready once  a similar image shows up 
 
-![Drag Racing](images/docker_ok.png)
+<p align="center">
+  <img src="images/docker_ok.png" width="600" alt="accessibility text">
+</p>
 
 ### Api interaction
 
@@ -23,7 +25,7 @@ Currently you can interact with the backend API this way:
 
 (in the case above the pool is named "prova", has a fundraising target of 10000 microalgos, with the corresponding _StartTime_ and _endTime_ will be setup by the address _PUBLICKEY_)
 
-> **Retrieve all contracts** http://localhost:8501/get\_all\_contracts
+> **Retrieve all contracts** http://localhost:8501/get_all_contracts
 
 The request above returns all contracts that have been created using the crowdfunding pool api above
 
