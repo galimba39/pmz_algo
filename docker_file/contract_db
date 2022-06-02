@@ -1,0 +1,9 @@
+FROM postgres:latest
+LABEL Author, Iacopo Galimberti
+
+ENV POSTGRES_USER=user
+ENV POSTGRES_PASSWORD=password
+ENV POSTGRES_DB=database
+
+
+COPY contracts/contract_table_create.sql /docker-entrypoint-initdb.d/contract_table_create.sql

@@ -1,4 +1,4 @@
-# pmz2022
+### Setup the environment
 
 1) Setup the sandbox. Go to the sandbox folder and run
 
@@ -8,15 +8,25 @@
 
 > docker-compose up --build
 
+The docker compose will start 3 nodes: one sql server, storing contracts, an API backend and a setup scripts, creating 3 pools from 3 users. The compose will be ready once  a similar image shows up 
+
+![Drag Racing](images/docker_ok.png)
+
+### Api interaction
+
 Currently you can interact with the backend API this way:
 
-> http://localhost:8501/address_info?address=PUBLICKEY
+> **get the address info**:  http://localhost:8501/address_info?address=PUBLICKEY
 
-to get the address infom and 
 
-> http://localhost:8501/create_contract?sender=PUBLICKEY&pool_name=prova&target=10000&startTime=1653775200&endTime=1653948000
+> **create a crowdfunding pool** http://localhost:8501/create_contract?sender=PUBLICKEY&pool_name=prova&target=10000&startTime=1653775200&endTime=1653948000
 
-To ask that a crowdfounding pool named "prova", having a target to raise 10000 microalgos, with the corresponding _StartTime_ and _endTime_ will be setup by the address _PUBLICKEY_
+(in the case above the pool is named "prova", has a fundraising target of 10000 microalgos, with the corresponding _StartTime_ and _endTime_ will be setup by the address _PUBLICKEY_)
+
+> **Retrieve all contracts** http://localhost:8501/get\_all\_contracts
+
+The request above returns all contracts that have been created using the crowdfunding pool api above
+
 
 **Please notice** that in order to make it works, the algorand address asking to build the contract must be founded.
 Back to the algorand folder, run

@@ -1,0 +1,19 @@
+FROM  python:3.10-slim-buster
+LABEL Author, Iacopo Galimberti
+
+WORKDIR /backend
+
+# Create the environment:
+COPY env/scenario_setup.txt .
+RUN pip install -r scenario_setup.txt
+
+
+# Copying data to set scenario up
+COPY scenario_setup.py .
+RUN mkdir contracts
+RUN mkdir contracts/external_utils
+
+COPY contracts/external_utils contracts/external_utils/
+
+RUN ls
+CMD python scenario_setup.py

@@ -16,5 +16,5 @@ Werkzeug==2.0.2
 wincertstore==0.2
 waitress==2.0.0
 pyteal==0.10.1
-sqlalchemy==1.4.37
-psycopg2-binary==2.9.3
+requests==2.27.1
+

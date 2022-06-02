@@ -72,3 +72,19 @@ def inspect_transaction(txid, algod_client):
         print(err)
 
         return None
+        
+        
+        
+def return_application_id(txid, algod_client):
+
+    import json
+    import base64
+
+    try:
+        confirmed_txn = future.transaction.wait_for_confirmation(algod_client, txid, 4)
+        return confirmed_txn["application-index"]
+
+    except Exception as err:
+        print(err)
+
+        return None

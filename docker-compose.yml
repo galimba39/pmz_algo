@@ -10,3 +10,20 @@ services:
       context: ./
     ports:
       - '8501:8501'
+      
+  db:
+    container_name: contracts_db
+    build:
+        dockerfile: docker_file/contract_db
+        context: ./
+    depends_on:
+      - contract
+      
+  scenario:
+    container_name: scenario_setup
+    build:
+      dockerfile: docker_file/scenario_setup
+      context: ./
+    depends_on:
+      - contract
+      - db
