@@ -6,16 +6,10 @@ from pyteal.ast.bytes import Bytes
 def approval():
 
    
-    # Actors
-    # Vale la pena aggiungere l'info o il nome della crowdfound
-    founder_actor = Bytes("founder")  # byteslice, actor asking for founds
-    token_id = Bytes("token_id") 
-
+    # App vars
     
-    # Actions
-    op_create_founding_pool = Bytes("create_pool") 
-
-    # Other 
+    founder_actor = Bytes("founder")  
+    token_id = Bytes("token_id") 
     founding_name = Bytes("founding_name")
     pool_target = Bytes("pool_target")
     start_time_key = Bytes("start")
@@ -27,9 +21,6 @@ def approval():
     starttime_founding =  Btoi(Txn.application_args[1])
     endtime_founding =  Btoi(Txn.application_args[2])
     pool_name =  Txn.application_args[3]
-
-    app_address = ScratchVar()
-
 
     on_create = Seq(
 
@@ -49,8 +40,11 @@ def approval():
                 App.globalPut(end_time_key,endtime_founding),
                 App.globalPut(pool_target, target_reserve),
                 App.globalPut(founding_name, pool_name),
+
                 Approve()
     )
+
+
 
     on_setup = Seq(
         
@@ -74,36 +68,38 @@ def approval():
                 TxnField.type_enum: TxnType.AssetConfig,
                 TxnField.config_asset_total: App.globalGet(pool_target),
                 TxnField.config_asset_decimals: Int(3),
-                TxnField.config_asset_default_frozen: Int(1), # dovrebbe essere true
+                TxnField.config_asset_default_frozen: Int(0), # dovrebbe essere true
                 TxnField.config_asset_unit_name: Bytes("unit"),
-                TxnField.config_asset_name: Itob(Global.latest_timestamp()),#Bytes("base32",Txn.sender()),
+                TxnField.config_asset_name: Itob(Global.latest_timestamp()),
                 TxnField.config_asset_manager: Global.current_application_address(),
                 TxnField.config_asset_reserve: Global.current_application_address(),
                 TxnField.config_asset_freeze: Global.current_application_address(),
                 TxnField.config_asset_clawback: Global.current_application_address(),
                     
                 }),
-          
 
-            InnerTxnBuilder.Submit()
+
+                InnerTxnBuilder.Submit(),
 
         ),
 
         App.globalPut(token_id, InnerTxn.created_asset_id()), #assigning new token id to the app
-
+        
         Approve()
 
     )
 
 
+
     program = Cond(
 
         [Txn.application_id() == Int(0), on_create],
+        [Txn.on_completion() == OnComplete.NoOp,
+            Cond(
+                [Txn.application_args[0] == Bytes("setup"), on_setup]
+            )
+        ]
 
-        [And(
-           Txn.on_completion() == OnComplete.NoOp,
-           Txn.application_args[0] == Bytes("setup")
-        ), on_setup],
     )
 
     return program

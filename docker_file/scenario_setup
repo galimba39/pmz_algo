@@ -12,8 +12,10 @@ RUN pip install -r scenario_setup.txt
 COPY scenario_setup.py .
 RUN mkdir contracts
 RUN mkdir contracts/external_utils
+RUN mkdir contracts/crowdfounding
 
 COPY contracts/external_utils contracts/external_utils/
+COPY contracts/crowdfounding/scenario_utils.py contracts/crowdfounding/
 
 RUN ls
 CMD python scenario_setup.py
