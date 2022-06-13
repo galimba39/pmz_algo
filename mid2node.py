@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
+from flask_restful.utils import cors
 import json
 import csv
 import hashlib
@@ -12,6 +13,7 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 api = Api(app)
+api.decorators=[cors.crossdomain(origin='*')]
 
 
 algod_address = "http://host.docker.internal:4001"
@@ -176,7 +178,7 @@ class get_all_contracts(Resource):
         
     def get(self):
     
-        contract_data_result = self.db.execute("SELECT * FROM crowdfounding_contracts")
+        contract_data_result = self.db.execute("SELECT * FROM crowdfounding_contracts where app_id >0")
         return [dict(r) for r in contract_data_result]
 
 
