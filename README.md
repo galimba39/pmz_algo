@@ -19,7 +19,6 @@ according to the pool promises.
 
 Please refer to [this](/contracts/crowdfounding/README.md) to have more info about the contract structure.
 
-<br>
 ### Setup the environment
 
 
@@ -27,8 +26,6 @@ Please refer to [this](/contracts/crowdfounding/README.md) to have more info abo
 
 ```
 ./sandbox reset
-``` <br>
-```
 ./sandbox up
 ```
 
@@ -38,7 +35,7 @@ Please refer to [this](/contracts/crowdfounding/README.md) to have more info abo
 docker-compose up --build
 ```
 
-The docker compose will start 3 containers: one sql db storing contracts' data, an API backend and a setup script, creating 3 pools from 3 users. The compose will be ready once  a similar image shows up 
+The docker compose will start 3 containers: one sql db storing contracts' data, an API backend and a setup script, creating 3 pools from 3 users (more details [here](/docker_file/README.md)). The compose will be ready once  a similar image shows up 
 
 <p align="center">
   <img src="images/docker_ok.png" width="600" alt="accessibility text">
@@ -46,7 +43,6 @@ The docker compose will start 3 containers: one sql db storing contracts' data, 
 
 	At the time of writing the sandbox reset is needed to overcome a missed synchronization between the blockchain timestamp and the actual one. Indeed the app uses the latest_timestamp() method and it may happen that the sandbox may loose sync with the current timestamp. Should it be the case, the scenario setup will fail to work.
 
-<br>
 ### Api interaction
 
 Currently you can interact with the backend API this way:
@@ -73,7 +69,6 @@ http://localhost:8501/get_all_contracts
 Back to the algorand folder, run
 
 
-<br>
 ### Interact with the solution
 Apart from the scenario setup, the reader can interact with the solution using the notebook 
 ```
