@@ -5,7 +5,8 @@ import json
 import base64
 import random
 import requests
-
+from functools import partial
+from algosdk.constants import MIN_TXN_FEE
 
 
 def inspect_transaction(txid, algod_client):
@@ -53,7 +54,9 @@ def sign_multiple_transactions(list_of_transaction, private_key, client)-> None:
     signed_list = [txn.sign(private_key) for txn in list_of_transaction]
     
     send_tx_step = client.send_transactions(signed_list)
-    inspect_transaction(send_tx_step, client)
+    
+    future.transaction.wait_for_confirmation(client, send_tx_step, 4)
+#    inspect_transaction(send_tx_step, client)
     
     
     
@@ -64,10 +67,14 @@ def setup_transaction(founder_address, pool_app_id, client) -> list:
         This step create tokens as a mean of participation to the pool.
     """
 
+    params = client.suggested_params()
+    params.fee = 2 * MIN_TXN_FEE
+    params.flat_fee = True
+
     fundAppTxn = future.transaction.PaymentTxn(
             sender = founder_address,
             receiver = logic.get_application_address(pool_app_id),
-            amt = 500000,
+            amt = 200000, 
             sp = client.suggested_params(),
         )
 
@@ -75,7 +82,7 @@ def setup_transaction(founder_address, pool_app_id, client) -> list:
             sender = founder_address,
             index=pool_app_id,
             app_args=[b"setup"],
-            sp=client.suggested_params()
+            sp= params
     )
 
     future.transaction.assign_group_id([fundAppTxn, setupTxn])
@@ -113,3 +120,113 @@ def setup_pool(founder_object, pool_app_id, client):
     except:
     
         print("Unsuccessful pool setup")
+        
+
+def get_latest_token(client, app_id):
+
+    
+    return client.account_info(logic.get_application_address(app_id))['created-assets'][-1]["index"]
+
+
+def asset_optin(founder_object, client, asset_id):
+
+    optin_txn = asset_optin_txn(client, founder_object.getAddress(), asset_id)
+    optintxn_signed = optin_txn.sign(founder_object.getPrivateKey())
+    txid = client.send_transaction(optintxn_signed)
+    future.transaction.wait_for_confirmation(client, txid,4)
+
+
+
+def asset_optin_txn(client,address,asset_id):
+
+    """
+        Source: https://developer.algorand.org/docs/get-details/asa/#receiving-an-asset
+        Papabile backend
+    """
+
+    # OPT-IN
+
+    account_info = client.account_info(address)
+    check_asset_presence = any([asset['asset-id']==asset_id for asset in account_info['assets']])
+
+    if check_asset_presence:
+
+        return None
+
+    else:
+
+        # Return asset optin transaction to sign
+        txn_to_sign = future.transaction.AssetTransferTxn(
+            sender=address,
+            sp=client.suggested_params(),
+            receiver=address,
+            amt=0,
+            index=asset_id)
+
+        return txn_to_sign
+        
+        
+        
+
+def donate_action(client,
+                  donor,
+                  app_id,
+                  amount,
+                  asset_id):
+
+    partecipation_amount = amount
+    
+    params = client.suggested_params()
+    params.fee = 5 * MIN_TXN_FEE
+    params.flat_fee = True
+
+    donateTxn = future.transaction.ApplicationNoOpTxn(
+            sender = donor,
+            index=app_id,
+            app_args=[b"donate"],
+            foreign_assets=[asset_id], # si legge dall'applicazione
+            sp= params
+    )
+
+    donationamtTxn = future.transaction.PaymentTxn(
+            sender = donor,
+            receiver = logic.get_application_address(app_id),
+            amt = partecipation_amount,
+            sp = params#client.suggested_params(),
+        )
+
+
+    future.transaction.assign_group_id([donateTxn, donationamtTxn])
+
+    return [donateTxn, donationamtTxn]
+    
+
+def end_pool_txn(address_object, app_id, client):
+    
+    
+    params = client.suggested_params()
+    params.fee = 3 * MIN_TXN_FEE
+    params.flat_fee = True
+    
+    asset_id = get_latest_token(client, app_id)
+        
+    claim_txn = future.transaction.ApplicationNoOpTxn(
+            sender = address_object.getAddress(),
+            index = app_id,
+            app_args = [b"end_pool"],
+            foreign_assets=[asset_id],
+            sp = params
+    )
+
+    signed_claim = claim_txn.sign(address_object.getPrivateKey())
+
+    txid = client.send_transaction(signed_claim)
+
+    future.transaction.wait_for_confirmation(client, txid,4)
+    
+    return asset_id
+
+
+claim_token = partial(end_pool_txn)
+claim_funds = partial(end_pool_txn)
+
